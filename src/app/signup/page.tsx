@@ -1,27 +1,34 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Loader2, Upload } from "lucide-react";
+import { useSignUpMutation } from '@/redux/features/auth/authApi';
+import { toast } from 'sonner';
+import RHFormProvider from '@/components/form/RHFromProvider';
+import RHInput from '@/components/form/RHInput';
+import RHFileSelect from '@/components/form/RHFileSelect';
 
 const SignUp: React.FC = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [name, setName] = useState('');
-    const [profilePicture, setProfilePicture] = useState<File | null>(null);
+    const [profileImg, setProfileImg] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
+    const [error, setError] = useState('')
+    const [signUp, { isLoading }] = useSignUpMutation();
 
+    // validate email
+    const validateEmail = (email: string) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    };
+
+    // image file change
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setProfilePicture(file);
+            setProfileImg(file);
             const reader = new FileReader();
             reader.onloadend = () => {
                 setPreviewUrl(reader.result as string);
@@ -30,35 +37,48 @@ const SignUp: React.FC = () => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-        setIsLoading(true);
-
-        const formData = new FormData();
-        formData.append('email', email);
-        formData.append('password', password);
-        formData.append('name', name);
-        if (profilePicture) {
-            formData.append('profilePicture', profilePicture);
+    // submit the form
+    const onSubmit = async (data: any) => {
+        if (!validateEmail(data?.email)) {
+            setError('Please enter a valid email address.');
+            return;
         }
-
+        const toastId = toast.loading("Signing up...")
         try {
-            const response = await fetch('/api/auth/signup', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (response.ok) {
-                router.push('/signin');
-            } else {
-                const data = await response.json();
-                setError(data.message || 'An error occurred during sign-up');
+            const formData = new FormData();
+            const signUpData = {
+                name: data?.name,
+                email: data?.email,
+                password: data?.password
             }
-        } catch (err) {
-            setError('An error occurred during sign-up');
-        } finally {
-            setIsLoading(false);
+            formData.append('data', JSON.stringify(signUpData))
+            if (profileImg) {
+                formData.append('file', profileImg);
+            }
+            else {
+                return setError("Please select a profile picture!")
+            }
+
+            // send the formData to api
+            const res = await signUp(formData).unwrap();
+            console.log("Result is here =>", res)
+            // const user = verifyToken(res?.token);
+
+            if (res?.success) {
+                toast.success("Sign up successful!", { id: toastId, duration: 2000 });
+                // setting the user to state
+                // dispatch(setUser({
+                //     user: user,
+                //     token: res?.token
+                // }));
+            }
+            else {
+                toast.error("Failed to sign up!", { id: toastId, duration: 2000 });
+            }
+        }
+        catch (error: any) {
+            const errorMessage = error?.data?.message || 'An error occurred';
+            toast.error(errorMessage, { id: toastId, duration: 2000 });
         }
     };
 
@@ -72,59 +92,45 @@ const SignUp: React.FC = () => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <RHFormProvider onSubmit={onSubmit} className="space-y-4">
+                        <RHInput
+                            name="name"
+                            type='text'
+                            label='Name'
+                            placeholder="John Doe"
+                            required
+                        />
+                        <RHInput
+                            name="email"
+                            type="email"
+                            label="Email"
+                            placeholder="m@example.com"
+                            required
+                        />
+                        <RHInput
+                            name="password"
+                            type="password"
+                            placeholder="••••••••"
+                            label="Password"
+                            required
+                        />
                         <div className="space-y-2">
-                            <Label htmlFor="name">Name</Label>
-                            <Input
-                                id="name"
-                                placeholder="John Doe"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="m@example.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="profilePicture">Profile Picture</Label>
+                            <label>Profile Picture</label>
                             <div className="flex items-center space-x-4">
+                                <RHFileSelect
+                                    name="profilePicture"
+                                    className="hidden"
+                                    onChange={handleFileChange}
+                                />
                                 <Button
                                     type="button"
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => fileInputRef.current?.click()}
+                                    onClick={() => document.getElementById('profilePicture')?.click()}
                                 >
                                     <Upload className="w-4 h-4 mr-2" />
                                     Choose File
                                 </Button>
-                                <Input
-                                    id="profilePicture"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                    className="hidden"
-                                    ref={fileInputRef}
-                                />
                                 {previewUrl && (
                                     <div className="relative w-16 h-16 rounded-full overflow-hidden">
                                         <img src={previewUrl} alt="Profile preview" className="object-cover w-full h-full" />
@@ -132,12 +138,15 @@ const SignUp: React.FC = () => {
                                 )}
                             </div>
                         </div>
-                        {error && <p className="text-sm text-destructive">{error}</p>}
-                        <Button className="w-full" type="submit" disabled={isLoading}>
-                            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                            Sign Up
+                        {error && <p className="text-sm text-red-500">{error}</p>}
+                        <Button
+                            className="w-full"
+                            type="submit"
+                            disabled={isLoading}>
+                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {isLoading ? "Signing Up" : "Sign up"}
                         </Button>
-                    </form>
+                    </RHFormProvider>
                 </CardContent>
                 <CardFooter>
                     <p className="text-sm text-center text-muted-foreground w-full">
