@@ -14,6 +14,7 @@ import { setCookie } from 'cookies-next';
 import { verifyToken } from '@/utils/verifyToken';
 import { useAppDispatch } from '@/redux/hooks';
 import { setUser } from '@/redux/features/auth/authSlice';
+import Image from 'next/image';
 
 const SignUp: React.FC = () => {
     const [profileImg, setProfileImg] = useState<File | null>(null);
@@ -138,9 +139,7 @@ const SignUp: React.FC = () => {
                                     Choose File
                                 </Button>
                                 {previewUrl && (
-                                    <div className="relative w-16 h-16 rounded-full overflow-hidden">
-                                        <img src={previewUrl} alt="Profile preview" className="object-cover w-full h-full" />
-                                    </div>
+                                    <Image src={previewUrl} alt="Profile preview" width={64} height={64} className='rounded-full object-cover'></Image>
                                 )}
                             </div>
                         </div>
