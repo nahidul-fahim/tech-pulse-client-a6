@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import 'react-quill/dist/quill.snow.css';
+import { useAppSelector } from '@/redux/hooks';
+import { selectCurrentUser } from '@/redux/features/auth/authSlice';
 
 const ReactQuill = dynamic(() => import('react-quill'), {
   ssr: false,
@@ -30,22 +33,24 @@ const PostEditor: React.FC<PostEditorProps> = ({ post }) => {
   const [category, setCategory] = useState(post?.category || '');
   const [isPremium, setIsPremium] = useState(post?.isPremium || false);
   const [isMounted, setIsMounted] = useState(false);
+  const user = useAppSelector(selectCurrentUser);
+  const userId = user?.userId;
 
   useEffect(() => {
     setIsMounted(true);
-    import('react-quill/dist/quill.snow.css');
+    // import('react-quill/dist/quill.snow.css');
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ title, content, category, isPremium });
+    console.log({ title, content, category, isPremium, userId });
   };
 
   const modules = {
     toolbar: [
       [{ 'header': [1, 2, false] }],
       ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
       ['link', 'image'],
       ['clean']
     ],
