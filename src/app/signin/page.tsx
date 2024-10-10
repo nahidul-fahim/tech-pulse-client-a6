@@ -1,43 +1,51 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import RHFormProvider from '@/components/form/RHFromProvider';
+import RHInput from '@/components/form/RHInput';
+import { toast } from 'sonner';
+import { FieldValues } from 'react-hook-form';
+import { useSigninMutation } from '@/redux/features/auth/authApi';
+import { verifyToken } from '@/utils/verifyToken';
+import { setUser, TUser } from '@/redux/features/auth/authSlice';
+import { useAppDispatch } from '@/redux/hooks';
+import { setCookie } from 'cookies-next';
 
 const SignIn: React.FC = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
+    const [signin, { isLoading }] = useSigninMutation();
+    const dispatch = useAppDispatch();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-        setIsLoading(true);
-
+    const onSubmit = async (data: FieldValues) => {
+        const toastId = toast.loading("Signing in...");
         try {
-            const response = await fetch('/api/auth/signin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            });
+            const signinInfo = {
+                email: data?.email,
+                password: data?.password,
+            };
+            // send the formData to api
+            const res = await signin(signinInfo).unwrap();
+            const user = verifyToken(res?.token) as TUser;
 
-            if (response.ok) {
-                const data = await response.json();
-                localStorage.setItem('token', data.token);
-                router.push('/dashboard');
+
+            if (res?.success) {
+                toast.success("Signin successful!", { id: toastId, duration: 2000 });
+                // setting the user to state
+                dispatch(setUser({
+                    user: user,
+                }));
+                setCookie("token", res?.token)
+                // redirect to dashboard
+                router.push("/");
             } else {
-                const data = await response.json();
-                setError(data.message || 'Invalid email or password');
+                toast.error(res?.message, { id: toastId, duration: 2000 });
             }
-        } catch (err) {
-            setError('An error occurred during sign-in');
-        } finally {
-            setIsLoading(false);
+        } catch (error: any) {
+            const errorMessage = error?.data?.message || 'An error occurred';
+            toast.error(errorMessage, { id: toastId, duration: 2000 });
         }
     };
 
@@ -51,35 +59,26 @@ const SignIn: React.FC = () => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="m@example.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        {error && <p className="text-sm text-destructive">{error}</p>}
+                    <RHFormProvider onSubmit={onSubmit} className="space-y-4">
+                        <RHInput
+                            name="email"
+                            type="email"
+                            placeholder="m@example.com"
+                            label='email'
+                            required
+                        />
+                        <RHInput
+                            name="password"
+                            type="password"
+                            placeholder="••••••••"
+                            label='Password'
+                            required
+                        />
                         <Button className="w-full" type="submit" disabled={isLoading}>
                             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                            Sign In
+                            {isLoading ? "Signing in" : "Sign In"}
                         </Button>
-                    </form>
+                    </RHFormProvider>
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-2">
                     <a href="/forgot-password" className="text-sm text-secondary hover:underline">

@@ -10,13 +10,18 @@ import { toast } from 'sonner';
 import RHFormProvider from '@/components/form/RHFromProvider';
 import RHInput from '@/components/form/RHInput';
 import RHFileSelect from '@/components/form/RHFileSelect';
+import { setCookie } from 'cookies-next';
+import { verifyToken } from '@/utils/verifyToken';
+import { useAppDispatch } from '@/redux/hooks';
+import { setUser } from '@/redux/features/auth/authSlice';
 
 const SignUp: React.FC = () => {
     const [profileImg, setProfileImg] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const router = useRouter();
-    const [error, setError] = useState('')
+    const [error, setError] = useState('');
     const [signUp, { isLoading }] = useSignUpMutation();
+    const dispatch = useAppDispatch();
 
     // validate email
     const validateEmail = (email: string) => {
@@ -61,16 +66,17 @@ const SignUp: React.FC = () => {
 
             // send the formData to api
             const res = await signUp(formData).unwrap();
-            console.log("Result is here =>", res)
-            // const user = verifyToken(res?.token);
+            const user = verifyToken(res?.token);
 
             if (res?.success) {
                 toast.success("Sign up successful!", { id: toastId, duration: 2000 });
                 // setting the user to state
-                // dispatch(setUser({
-                //     user: user,
-                //     token: res?.token
-                // }));
+                dispatch(setUser({
+                    user: user,
+                }));
+                // setting the token to cookie
+                setCookie("token", res?.token)
+                router.push("/");
             }
             else {
                 toast.error("Failed to sign up!", { id: toastId, duration: 2000 });
