@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useDeletePostMutation, useGetAllPostsQuery } from "@/redux/features/post/postApi";
+import { useDeletePostMutation, useGetUserAllPostsQuery } from "@/redux/features/post/postApi";
 import PostEditor from "../postEditor/PostEditor";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
@@ -28,12 +28,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 const MyPostsTable = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [category, setCategory] = useState("");
-    console.log("Category", category)
     const [isPremium, setIsPremium] = useState("all");
     const [currentPage, setCurrentPage] = useState(1);
     const postsPerPage = 5;
     const token = useToken();
-    const { data, isLoading, refetch } = useGetAllPostsQuery({
+    const { data, isLoading, refetch } = useGetUserAllPostsQuery({
+        token: token as string,
         searchTerm: searchTerm,
         category: category,
         isPremium: isPremium,

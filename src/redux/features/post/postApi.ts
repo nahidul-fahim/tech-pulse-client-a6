@@ -19,9 +19,6 @@ const postApi = baseApi.injectEndpoints({
         getAllPosts: builder.query({
             query: ({ searchTerm = "", category = "", isPremium = "all", page = 1, limit = 5 }) => {
                 let queryString = `/post/get-posts?searchTerm=${searchTerm}&page=${page}&limit=${limit}`;
-                // if (category) {
-                //     queryString += `&category=${category !== "all" ? category : ""}`;
-                // }
                 if (category !== "all" && category !== "") {
                     queryString += `&category=${category}`;
                 }
@@ -35,6 +32,28 @@ const postApi = baseApi.injectEndpoints({
                 }
             }
         }),
+
+        // get user all posts
+        getUserAllPosts: builder.query({
+            query: ({ token, searchTerm = "", category = "", isPremium = "all", page = 1, limit = 5 }) => {
+                let queryString = `/post/get-user-posts?searchTerm=${searchTerm}&page=${page}&limit=${limit}`;
+                if (category !== "all" && category !== "") {
+                    queryString += `&category=${category}`;
+                }
+                if (isPremium && isPremium !== "all") {
+                    const trueOrFalse = isPremium === "true" ? true : false;
+                    queryString += `&isPremium=${trueOrFalse}`;
+                }
+                return {
+                    url: queryString,
+                    method: "GET",
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            }
+        }),
+
 
         // get single post
         getSinglePost: builder.query({
@@ -72,6 +91,7 @@ const postApi = baseApi.injectEndpoints({
 export const {
     useCreateNewPostMutation,
     useGetAllPostsQuery,
+    useGetUserAllPostsQuery,
     useGetSinglePostQuery,
     useUpdatePostMutation,
     useDeletePostMutation
