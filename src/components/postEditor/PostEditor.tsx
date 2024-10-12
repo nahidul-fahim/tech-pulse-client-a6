@@ -14,8 +14,7 @@ import { useCreateNewPostMutation, useUpdatePostMutation } from '@/redux/feature
 import { toast } from 'sonner';
 import useToken from '@/hooks/useToken';
 import { TSinglePost } from '@/types/allTypes';
-
-const categories = ["Web", "Software Engineering", "AI", "Mobile", "DevOps", "Data Science"];
+import { categories } from '@/static/allCategories';
 
 const PostEditor = ({ post = null, refetch }: { post: TSinglePost | null, refetch: () => void }) => {
   const [featuredImgPreview, setFeaturedImgPreview] = useState<string | null>(post?.featuredImg || null);
@@ -116,7 +115,7 @@ const PostEditor = ({ post = null, refetch }: { post: TSinglePost | null, refetc
                 size="sm"
                 type='button'
                 onClick={() => setIsPremium(false)}>
-                Regular post
+                Free
               </Button>
 
               <Button
@@ -124,7 +123,7 @@ const PostEditor = ({ post = null, refetch }: { post: TSinglePost | null, refetc
                 size="sm"
                 type='button'
                 onClick={() => setIsPremium(true)}>
-                Premium post
+                Premium
               </Button>
             </div>
           </div>

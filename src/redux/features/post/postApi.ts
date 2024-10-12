@@ -17,10 +17,23 @@ const postApi = baseApi.injectEndpoints({
         }),
         // get all posts
         getAllPosts: builder.query({
-            query: () => ({
-                url: `/post/get-posts`,
-                method: 'GET',
-            })
+            query: ({ searchTerm = "", category = "", isPremium = "all", page = 1, limit = 5 }) => {
+                let queryString = `/post/get-posts?searchTerm=${searchTerm}&page=${page}&limit=${limit}`;
+                // if (category) {
+                //     queryString += `&category=${category !== "all" ? category : ""}`;
+                // }
+                if (category !== "all" && category !== "") {
+                    queryString += `&category=${category}`;
+                }
+                if (isPremium && isPremium !== "all") {
+                    const trueOrFalse = isPremium === "true" ? true : false;
+                    queryString += `&isPremium=${trueOrFalse}`;
+                }
+                return {
+                    url: queryString,
+                    method: "GET"
+                }
+            }
         }),
 
         // get single post
