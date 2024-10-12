@@ -17,7 +17,7 @@ import { TSinglePost } from '@/types/allTypes';
 
 const categories = ["Web", "Software Engineering", "AI", "Mobile", "DevOps", "Data Science"];
 
-const PostEditor = ({ post, refetch }: { post: TSinglePost | null, refetch: () => void }) => {
+const PostEditor = ({ post = null, refetch }: { post: TSinglePost | null, refetch: () => void }) => {
   const [featuredImgPreview, setFeaturedImgPreview] = useState<string | null>(post?.featuredImg || null);
   const [featuredImg, setFeaturedImg] = useState<File | null>(null);
   const token = useToken();

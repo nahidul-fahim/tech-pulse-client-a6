@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import { useGetAllPostsQuery } from "@/redux/features/post/postApi";
+import { useDeletePostMutation, useGetAllPostsQuery } from "@/redux/features/post/postApi";
 import PostEditor from "../postEditor/PostEditor";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
@@ -10,12 +11,30 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { TabsContent } from "../ui/tabs";
 import { useState } from "react";
 import { TSinglePost } from "@/types/allTypes";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
+import useToken from "@/hooks/useToken";
+import { toast } from "sonner";
 
 
 const MyPostsTable = () => {
 
     const { data, isLoading, refetch } = useGetAllPostsQuery("");
     const [searchTerm, setSearchTerm] = useState("");
+    const token = useToken();
+    const [deletePost, { isLoading: isDeleting }] = useDeletePostMutation();
+
+    // handle delete post
+    const handleDeletePost = async (postId: string) => {
+        const toastId = toast.loading("Deleting post...");
+        try {
+            await deletePost({ token: token as string, id: postId as string });
+            toast.success("Post deleted successfully.", { id: toastId, duration: 2000 });
+            refetch();
+        } catch (error: any) {
+            const errorMessage = error?.data?.message || 'Failed to delete';
+            toast.error(errorMessage, { id: toastId, duration: 2000 });
+        }
+    }
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -41,7 +60,7 @@ const MyPostsTable = () => {
                             <DialogTrigger asChild>
                                 <Button>New Post</Button>
                             </DialogTrigger>
-                            <PostEditor />
+                            <PostEditor post={null} refetch={refetch} />
                         </Dialog>
                     </div>
                     <Table>
@@ -66,13 +85,31 @@ const MyPostsTable = () => {
                                     <TableCell>{post?.upvoteCount}</TableCell>
                                     <TableCell>{post?.downvoteCount}</TableCell>
                                     <TableCell>
+                                        {/* edit functionality */}
                                         <Dialog>
                                             <DialogTrigger asChild>
                                                 <Button variant="outline" className="mr-2">Edit</Button>
                                             </DialogTrigger>
                                             <PostEditor post={post} refetch={refetch} />
                                         </Dialog>
-                                        <Button variant="destructive">Delete</Button>
+                                        {/* delete functionality */}
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="destructive" disabled={isDeleting}>Delete</Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you sure to delete?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        You can&apos;t undo this action.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={() => handleDeletePost(post?._id)}>Yes! Delete</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                     </TableCell>
                                 </TableRow>
                             ))}

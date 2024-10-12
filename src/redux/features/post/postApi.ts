@@ -42,6 +42,17 @@ const postApi = baseApi.injectEndpoints({
                 }
             })
         }),
+
+        // delete a post
+        deletePost: builder.mutation({
+            query: ({ token, id }: { token: string, id: string }) => ({
+                url: `/post/delete-post/${id}`,
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+        }),
     }),
 })
 
@@ -49,5 +60,6 @@ export const {
     useCreateNewPostMutation,
     useGetAllPostsQuery,
     useGetSinglePostQuery,
-    useUpdatePostMutation
+    useUpdatePostMutation,
+    useDeletePostMutation
 } = postApi;
