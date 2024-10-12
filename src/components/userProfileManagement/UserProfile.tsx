@@ -104,10 +104,10 @@ const UserProfile = () => {
                 <div className="flex items-center space-x-4">
                     <Avatar className="w-24 h-24">
                         <AvatarImage src={user?.profileImg} alt={user?.name} />
-                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                        <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <h2 className="text-2xl font-bold">{user.name}</h2>
+                        <h2 className="text-2xl font-bold">{user?.name}</h2>
                         {user.isVerified && <Badge className="mt-1">Verified</Badge>}
                     </div>
                 </div>

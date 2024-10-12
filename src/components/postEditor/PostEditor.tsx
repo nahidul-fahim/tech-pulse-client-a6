@@ -1,127 +1,167 @@
-import React, { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useState } from 'react';
 import { DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Image from 'next/image';
 import 'react-quill/dist/quill.snow.css';
-import { useAppSelector } from '@/redux/hooks';
-import { selectCurrentUser } from '@/redux/features/auth/authSlice';
-
-const ReactQuill = dynamic(() => import('react-quill'), {
-  ssr: false,
-  loading: () => <p>Loading Editor...</p>,
-});
+import { FieldValues } from 'react-hook-form';
+import RHFormProvider from '../form/RHFromProvider';
+import RHInput from '../form/RHInput';
+import RHSelect from '../form/RHSelect';
+import RHFileSelect from '../form/RHFileSelect';
+import RHQuillEditor from '../form/RHQuillEditor';
+import { useCreateNewPostMutation, useUpdatePostMutation } from '@/redux/features/post/postApi';
+import { toast } from 'sonner';
+import useToken from '@/hooks/useToken';
+import { TSinglePost } from '@/types/allTypes';
 
 const categories = ["Web", "Software Engineering", "AI", "Mobile", "DevOps", "Data Science"];
 
-interface PostEditorProps {
-  post?: {
-    id: number;
-    title: string;
-    content: string;
-    category: string;
-    isPremium: boolean;
-  };
-}
-
-const PostEditor: React.FC<PostEditorProps> = ({ post }) => {
-  const [title, setTitle] = useState(post?.title || '');
-  const [content, setContent] = useState(post?.content || '');
-  const [category, setCategory] = useState(post?.category || '');
-  const [isPremium, setIsPremium] = useState(post?.isPremium || false);
+const PostEditor = ({ post, refetch }: { post: TSinglePost | null, refetch: () => void }) => {
+  const [featuredImgPreview, setFeaturedImgPreview] = useState<string | null>(post?.featuredImg || null);
+  const [featuredImg, setFeaturedImg] = useState<File | null>(null);
+  const token = useToken();
   const [isMounted, setIsMounted] = useState(false);
-  const user = useAppSelector(selectCurrentUser);
-  const userId = user?.userId;
+  const [isPremium, setIsPremium] = useState(post?.isPremium || false);
+  const [createNewPost, { isLoading }] = useCreateNewPostMutation();
+  const [updatePost, { isLoading: isUpdating }] = useUpdatePostMutation();
 
   useEffect(() => {
     setIsMounted(true);
-    // import('react-quill/dist/quill.snow.css');
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log({ title, content, category, isPremium, userId });
+  // image file change
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFeaturedImg(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFeaturedImgPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, false] }],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-      ['link', 'image'],
-      ['clean']
-    ],
-  };
+  // submit the data
+  const onSubmit = async (data: FieldValues) => {
+    const toastId = toast.loading('Creating post...');
+    try {
+      const formData = new FormData();
+      if (featuredImg) {
+        formData.append('file', featuredImg);
+      }
+      const postData = {
+        title: data?.title as string,
+        description: data?.content as any,
+        category: data?.category as string,
+        isPremium: isPremium as boolean
+      }
+      formData.append('data', JSON.stringify(postData));
+      if (post) {
+        await updatePost({ token: token as string, id: post._id as string, postInfo: formData }).unwrap();
+        refetch();
+        toast.success('Post updated successfully', { id: toastId, duration: 2000 });
+      } else {
+        await createNewPost({ token: token as string, postInfo: formData }).unwrap();
+        refetch();
+        toast.success('Post created successfully', { id: toastId, duration: 2000 });
+      }
+      // reset form
+      setFeaturedImgPreview(null);
+      setFeaturedImg(null);
+      setIsPremium(false);
 
-  const formats = [
-    'header',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'indent',
-    'link', 'image'
-  ];
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || 'An error occurred';
+      toast.error(errorMessage, { id: toastId, duration: 2000 });
+    }
+  };
 
   return (
     <DialogContent className="sm:max-w-[725px] overflow-y-auto max-h-[90vh]">
       <DialogHeader>
         <DialogTitle>{post ? 'Edit Post' : 'Create New Post'}</DialogTitle>
       </DialogHeader>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="title">Title</Label>
-          <Input
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+
+      <RHFormProvider
+        onSubmit={onSubmit}
+        defaultValues={{
+          title: post?.title || '',
+          content: post?.description || '',
+          category: post?.category || '',
+          isPremium: post?.isPremium || false,
+          featuredImage: post?.featuredImg || null,
+        }}
+      >
+        <div className="space-y-4">
+          <RHInput
+            type="text"
+            name="title"
+            label="Title"
             placeholder="Enter post title"
           />
-        </div>
-        <div className="flex items-center space-x-4">
-          <div className="flex-grow">
-            <Label htmlFor="category">Category</Label>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <RHSelect
+            name="category"
+            options={categories}
+            placeholder="Select a category"
+            label="Category"
+          />
+
+          <div className="flex flex-col items-start justify-start space-y-2">
+            <label htmlFor="">Post type</label>
+            <div className='flex items-center space-x-2'>
+              <Button
+                variant={!isPremium ? 'secondary' : 'outline'}
+                size="sm"
+                type='button'
+                onClick={() => setIsPremium(false)}>
+                Regular post
+              </Button>
+
+              <Button
+                variant={isPremium ? 'secondary' : 'outline'}
+                size="sm"
+                type='button'
+                onClick={() => setIsPremium(true)}>
+                Premium post
+              </Button>
+            </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="premium"
-              checked={isPremium}
-              onCheckedChange={setIsPremium}
-            />
-            <Label htmlFor="premium">Premium Content</Label>
-          </div>
-        </div>
-        <div>
-          <Label htmlFor="content">Content</Label>
-          {isMounted && (
-            <div className="h-[300px] mb-4">
-              <ReactQuill
-                theme="snow"
-                value={content}
-                onChange={setContent}
-                modules={modules}
-                formats={formats}
-                className="h-full"
+
+          {/* Featured Image Section */}
+          <RHFileSelect
+            name="featuredImage"
+            label="Featured Image"
+            onChange={handleImageChange}
+          />
+          {featuredImgPreview && (
+            <div className="mt-2">
+              <Image
+                src={featuredImgPreview}
+                alt="Preview"
+                height={128}
+                width={256}
+                className="h-32 w-auto object-cover mt-2"
               />
             </div>
           )}
+
+          {isMounted && (
+            <RHQuillEditor
+              name="content"
+              label="Content"
+              content={post?.description || ''}
+            />
+          )}
         </div>
-      </form>
-      <DialogFooter>
-        <Button type="submit" onClick={handleSubmit} className="w-full">
-          {post ? 'Update' : 'Create'} Post
-        </Button>
-      </DialogFooter>
+
+        <DialogFooter className='mt-3'>
+          <Button type="submit" className="w-full" disabled={isLoading || isUpdating}>
+            {post ? 'Update' : 'Create'} Post
+          </Button>
+        </DialogFooter>
+      </RHFormProvider>
     </DialogContent>
   );
 };
