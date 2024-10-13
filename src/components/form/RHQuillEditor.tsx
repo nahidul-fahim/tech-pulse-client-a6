@@ -23,7 +23,7 @@ const RHQuillEditor = ({ content, name, label, className }: TInputProps) => {
             [{ 'header': [1, 2, false] }],
             ['bold', 'italic', 'underline', 'strike', 'blockquote'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            ['link'],
+            ['link', 'image'],
             ['clean']
         ],
     };
@@ -31,7 +31,7 @@ const RHQuillEditor = ({ content, name, label, className }: TInputProps) => {
     const formats = [
         'header',
         'bold', 'italic', 'underline', 'strike', 'blockquote',
-        'list', 'bullet', 'link'
+        'list', 'bullet', 'link', 'image'
     ];
 
     const { control } = useFormContext();

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export type TUser = {
+    userRole: string;
     _id: string;
     name: string;
     email: string;

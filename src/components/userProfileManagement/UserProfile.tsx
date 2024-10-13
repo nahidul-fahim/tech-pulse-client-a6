@@ -108,7 +108,7 @@ const UserProfile = () => {
                     </Avatar>
                     <div>
                         <h2 className="text-2xl font-bold">{user?.name}</h2>
-                        {user.isVerified && <Badge className="mt-1">Verified</Badge>}
+                        {user?.isSubscribed && <Badge className="mt-1 bg-green-100 text-green-700 font-semibold">Verified</Badge>}
                     </div>
                 </div>
 

@@ -6,10 +6,6 @@
   font-family: var(--font-inter);
 }
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -19,5 +15,104 @@ body {
 @layer base {
   :root {
     --radius: 0.5rem;
+  }
+}
+
+
+/* ----- Blog ----- */
+/* Styles for h1 tag */
+.blog h1,
+.blog h1 strong,
+.blog h1 span {
+  color: black !important;
+  font-size: 35px;
+  line-height: 50px;
+  font-weight: bold;
+  /* margin: 0px 0 0px 0; */
+}
+
+/* Styles for h2 tag */
+.blog h2,
+.blog h2 strong,
+.blog h2 span {
+  color: black !important;
+  font-size: 26px;
+  line-height: 45px;
+  font-weight: 700;
+  margin: 20px 0 0px 0;
+
+}
+
+/* Styles for h3 tag */
+.blog h3,
+.blog h3 strong,
+.blog h3 span {
+  color: black !important;
+  font-size: 20px;
+  line-height: 36px;
+  font-weight: 600;
+  margin: 12px 0 0px 0;
+
+}
+
+/* Styles for p tag */
+.blog p,
+.blog p strong,
+.blog p span {
+  font-size: 16px;
+  line-height: 30px;
+  color: #464646 !important
+}
+
+/* Styles for unordered list */
+.blog ul,
+.blog ul strong,
+.blog ul span {
+  list-style-type: disc;
+  color: #464646 !important
+}
+
+/* Styles for ordered list */
+.blog ol,
+.blog ol strong,
+.blog ol span {
+  list-style-type: decimal;
+  color: #464646 !important
+}
+
+/* Styles for list items */
+.blog li {
+  margin-bottom: 10px;
+  margin-left: 40px;
+  color: #464646 !important
+}
+
+/* Styles for a tag */
+.blog a,
+.blog a strong,
+.blog a span {
+  color: #000080 !important;
+  font-weight: 500;
+}
+
+/* responsive */
+@media screen and (max-width: 640px) {
+  .blog h1 {
+    font-size: 40px;
+    line-height: 50px;
+  }
+
+  .blog h2 {
+    font-size: 23px;
+    line-height: 38px;
+  }
+
+  .blog h3 {
+    font-size: 20px;
+    line-height: 33px;
+  }
+
+  .blog li {
+    margin-left: 25px;
   }
 }

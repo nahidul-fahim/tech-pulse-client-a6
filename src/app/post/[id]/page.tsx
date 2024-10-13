@@ -1,17 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ThumbsUp, ThumbsDown, MessageSquare, Share2, Calendar, Edit2, Trash2 } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MessageSquare, Calendar, Edit2, Trash2 } from "lucide-react";
 import { useGetSinglePostQuery, useVotePostMutation } from '@/redux/features/post/postApi';
 import useToken from '@/hooks/useToken';
 import { useCreateNewCommentMutation, useDeleteCommentMutation, useSinglePostCommentsQuery, useUpdateCommentMutation } from '@/redux/features/comment/commentApi';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import {
+    FacebookShareButton,
+    LinkedinShareButton,
+    TelegramShareButton,
+    TwitterShareButton,
+    WhatsappShareButton,
+    FacebookIcon,
+    LinkedinIcon,
+    TelegramIcon,
+    WhatsappIcon,
+    XIcon,
+} from "react-share";
 
 interface PostDetailsProps {
     params: {
@@ -32,6 +45,19 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
     const [newComment, setNewComment] = useState('');
     const [editedCommentContent, setEditedCommentContent] = useState('');
     const [showEditCommentBox, setShowEditCommentBox] = useState(false);
+    const router = useRouter();
+
+
+    useEffect(() => {
+        if (!isLoading && !currentUserLoading) {
+            const isSubscribed = currentUserData?.data?.isSubscribed;
+            const currentPostStatus = data?.data?.isPremium;
+            if (currentPostStatus && !isSubscribed) {
+                console.log('User is subscribed and post is premium');
+                router.push('/upgrade-premium')
+            }
+        }
+    }, [currentUserData?.data?.isSubscribed, data?.data?.isPremium, isLoading, currentUserLoading, router])
 
     // upvote/downvote logic
     const handleVotePost = async (vote: boolean) => {
@@ -84,12 +110,22 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
     const singlePost = data?.data;
     const allComments = commentData?.data;
     const currentUser = currentUserData?.data;
+    const shareUrl = `https://tech-pulse.vercel.app/post/${singlePost?.id}`;
+    const title = singlePost?.title;
 
     return (
         <div className="max-w-4xl mx-auto p-4">
             <Card className="mb-8 shadow-lg overflow-hidden">
                 <Image src={singlePost?.featuredImg} alt={singlePost.title} width={200} height={100} className="w-full h-64 object-cover" />
                 <CardHeader>
+                    {/* Breadcrumb */}
+                    <div className="text-sm breadcrumbs mb-4">
+                        <ul className="flex space-x-2 text-gray-600">
+                            <li><a href="/" className="hover:underline">Home</a></li>
+                            <li>&gt;</li>
+                            <li className="text-primary font-semibold">Post Details</li>
+                        </ul>
+                    </div>
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium text-secondary bg-secondary/10 px-2 py-1 rounded">{singlePost?.category}</span>
                         <div className="flex items-center text-secondary space-x-4">
@@ -131,10 +167,36 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
                         className="blog lg:pr-40 text-justify"
                     ></div>
                 </CardContent>
-                <CardFooter>
-                    <Button variant="outline" className="ml-auto">
+                <CardFooter className='flex justify-start items-center gap-3'>
+                    {/* <Button variant="outline" className="ml-auto">
                         <Share2 className="mr-2 h-5 w-5" /> Share
-                    </Button>
+                    </Button> */}
+                    <FacebookShareButton url={shareUrl}>
+                        <FacebookIcon size={32} round />
+                    </FacebookShareButton>
+                    <TwitterShareButton
+                        url={shareUrl}
+                        title={title}
+                    >
+                        <XIcon size={32} round />
+                    </TwitterShareButton>
+                    <LinkedinShareButton url={shareUrl} className="Demo__some-network__share-button">
+                        <LinkedinIcon size={32} round />
+                    </LinkedinShareButton>
+                    <TelegramShareButton
+                        url={shareUrl}
+                        title={title}
+                        className="Demo__some-network__share-button"
+                    >
+                        <TelegramIcon size={32} round />
+                    </TelegramShareButton>
+                    <WhatsappShareButton
+                        url={shareUrl}
+                        title={title}
+                        separator=":: "
+                    >
+                        <WhatsappIcon size={32} round />
+                    </WhatsappShareButton>
                 </CardFooter>
             </Card>
 

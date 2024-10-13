@@ -2,17 +2,25 @@
 "use client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { useAllPaymentsQuery } from "@/redux/features/payment/paymentApi";
-import useToken from "@/hooks/useToken";
-const PaymentHistory = () => {
-    const token = useToken();
-    const { data, isLoading } = useAllPaymentsQuery({ token });
+import { useUserPaymentsQuery } from "@/redux/features/payment/paymentApi";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import { useEffect, useState } from "react";
+const UserPaymentTable = () => {
+    const { data: currentUserData, isLoading: currentUserLoading } = useCurrentUser();
+    const [currentUsedId, setCurrentUsedId] = useState("");
+    const { data, isLoading } = useUserPaymentsQuery({ id: currentUsedId });
 
-    if (isLoading) {
+    useEffect(() => {
+        if (!currentUserLoading) {
+            setCurrentUsedId(currentUserData?.data?._id)
+        }
+    }, [currentUserData?.data?._id, currentUserLoading]);
+
+    if (currentUserLoading || isLoading) {
         return <div>Loading...</div>;
     }
 
-    const paymentData = data?.data?.payments;
+    const paymentData = data?.data;
 
 
     return (
@@ -27,8 +35,6 @@ const PaymentHistory = () => {
                         <TableHeader>
                             <TableRow>
                                 <TableHead></TableHead>
-                                <TableHead>User</TableHead>
-                                <TableHead>Email</TableHead>
                                 <TableHead>Transaction Id</TableHead>
                                 <TableHead>Amount</TableHead>
                                 <TableHead>Date</TableHead>
@@ -38,8 +44,6 @@ const PaymentHistory = () => {
                             {paymentData?.map((payment: any, idx: number) => (
                                 <TableRow key={payment?._id}>
                                     <TableCell>{idx + 1}</TableCell>
-                                    <TableCell>{payment?.userId?.name}</TableCell>
-                                    <TableCell>{payment?.userId?.email}</TableCell>
                                     <TableCell>{payment?.transactionId}</TableCell>
                                     <TableCell>${payment?.paidAmount}</TableCell>
                                     <TableCell>{(payment?.createdAt).split("T")[0]}</TableCell>
@@ -53,4 +57,4 @@ const PaymentHistory = () => {
     );
 };
 
-export default PaymentHistory;
+export default UserPaymentTable;
