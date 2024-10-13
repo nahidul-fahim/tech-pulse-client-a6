@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server';
 
 export const middleware = (req: NextRequest) => {
     const token = cookies().get('token')?.value;
+    console.log("token from middleware: ", token)
     // const user = cookies().get('user')?.value;
 
     if (!token) {
@@ -11,4 +12,4 @@ export const middleware = (req: NextRequest) => {
     }
 };
 
-export const config = { matcher: ['/dashboard/:path*'] };
+export const config = { matcher: ['/admin-dashboard/:path*'] };

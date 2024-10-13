@@ -32,7 +32,6 @@ const postApi = baseApi.injectEndpoints({
                 }
             }
         }),
-
         // get user all posts
         getUserAllPosts: builder.query({
             query: ({ token, searchTerm = "", category = "", isPremium = "all", page = 1, limit = 5 }) => {
@@ -53,8 +52,6 @@ const postApi = baseApi.injectEndpoints({
                 }
             }
         }),
-
-
         // get single post
         getSinglePost: builder.query({
             query: (id: string) => ({
@@ -62,7 +59,6 @@ const postApi = baseApi.injectEndpoints({
                 method: 'GET',
             })
         }),
-
         // update a post
         updatePost: builder.mutation({
             query: ({ token, id, postInfo }: { token: string, id: string, postInfo: Record<string, any> }) => ({
@@ -85,6 +81,18 @@ const postApi = baseApi.injectEndpoints({
                 }
             })
         }),
+
+        // vote a post
+        votePost: builder.mutation({
+            query: ({ token, id, voteType }: { token: string, id: string, voteType: Record<string, boolean> }) => ({
+                url: `/post/vote-post/${id}`,
+                method: 'PATCH',
+                body: voteType,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+        })
     }),
 })
 
@@ -94,5 +102,6 @@ export const {
     useGetUserAllPostsQuery,
     useGetSinglePostQuery,
     useUpdatePostMutation,
-    useDeletePostMutation
+    useDeletePostMutation,
+    useVotePostMutation
 } = postApi;

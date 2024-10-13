@@ -21,15 +21,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Providers>
-      <html lang="en">
-        <body
-          className={`${inter.variable} antialiased`}
-        >
+    <html lang="en">
+      <body
+        className={`${inter.variable} antialiased min-h-screen`}
+      >
+        <Providers>
+
           {children}
-          <Toaster />
-        </body>
-      </html>
-    </Providers>
+        </Providers>
+        <Toaster />
+      </body>
+    </html>
   );
 }
