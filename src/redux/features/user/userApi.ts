@@ -14,6 +14,16 @@ const userApi = baseApi.injectEndpoints({
                 }
             })
         }),
+        // get all users
+        getAllUsers: builder.query({
+            query: ({ token }: { token: string }) => ({
+                url: `/users`,
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+        }),
         // update user
         updateUser: builder.mutation({
             query: ({ id, updatedInfo, token }: { id: string, updatedInfo: Record<string, any>, token: string }) => ({
@@ -25,10 +35,23 @@ const userApi = baseApi.injectEndpoints({
                 }
             })
         }),
+        // manage user
+        manageUser: builder.mutation({
+            query: ({ id, manageData, token }: { id: string, manageData: Record<string, unknown>, token: string }) => ({
+                url: `/manage-user/${id}`,
+                method: 'PUT',
+                body: manageData,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+        })
     }),
 })
 
 export const {
     useGetUserQuery,
+    useGetAllUsersQuery,
     useUpdateUserMutation,
+    useManageUserMutation
 } = userApi;
