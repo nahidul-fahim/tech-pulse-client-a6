@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeClosed, Loader2 } from "lucide-react";
 import RHFormProvider from '@/components/form/RHFromProvider';
 import RHInput from '@/components/form/RHInput';
 import { toast } from 'sonner';
@@ -13,11 +13,19 @@ import { verifyToken } from '@/utils/verifyToken';
 import { setUser, TUser } from '@/redux/features/auth/authSlice';
 import { useAppDispatch } from '@/redux/hooks';
 import { setCookie } from 'cookies-next';
+import { useState } from 'react';
 
 const SignIn: React.FC = () => {
     const router = useRouter();
     const [signin, { isLoading }] = useSigninMutation();
     const dispatch = useAppDispatch();
+    const [showPassword, setShowPassword] = useState(false);
+
+    // show/hide password
+    const handleShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+
 
     const onSubmit = async (data: FieldValues) => {
         const toastId = toast.loading("Signing in...");
@@ -67,13 +75,26 @@ const SignIn: React.FC = () => {
                             label='email'
                             required
                         />
-                        <RHInput
-                            name="password"
-                            type="password"
-                            placeholder="••••••••"
-                            label='Password'
-                            required
-                        />
+                        <div className="relative">
+                            <RHInput
+                                name="password"
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="••••••••"
+                                label='Password'
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="absolute top-1/2 translate-y-1/2 right-3"
+                                onClick={handleShowPassword}>
+                                {
+                                    showPassword ?
+                                        <Eye className="text-body/60 w-4 h-4" />
+                                        :
+                                        <EyeClosed className="text-body/60 w-4 h-4" />
+                                }
+                            </button>
+                        </div>
                         <Button className="w-full" type="submit" disabled={isLoading}>
                             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                             {isLoading ? "Signing in" : "Sign In"}

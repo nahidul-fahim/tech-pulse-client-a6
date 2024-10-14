@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Loader2, Upload } from "lucide-react";
+import { Eye, EyeClosed, Loader2, Upload } from "lucide-react";
 import { useSignUpMutation } from '@/redux/features/auth/authApi';
 import { toast } from 'sonner';
 import RHFormProvider from '@/components/form/RHFromProvider';
@@ -23,6 +23,12 @@ const SignUp: React.FC = () => {
     const [error, setError] = useState('');
     const [signUp, { isLoading }] = useSignUpMutation();
     const dispatch = useAppDispatch();
+    const [showPassword, setShowPassword] = useState(false);
+
+    // show/hide password
+    const handleShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
 
     // validate email
     const validateEmail = (email: string) => {
@@ -114,13 +120,26 @@ const SignUp: React.FC = () => {
                             placeholder="m@example.com"
                             required
                         />
-                        <RHInput
-                            name="password"
-                            type="password"
-                            placeholder="••••••••"
-                            label="Password"
-                            required
-                        />
+                        <div className="relative">
+                            <RHInput
+                                name="password"
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="••••••••"
+                                label="Password"
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="absolute top-1/2 translate-y-1/2 right-3"
+                                onClick={handleShowPassword}>
+                                {
+                                    showPassword ?
+                                        <Eye className="text-body/60 w-4 h-4" />
+                                        :
+                                        <EyeClosed className="text-body/60 w-4 h-4" />
+                                }
+                            </button>
+                        </div>
                         <div className="space-y-2">
                             <label>Profile Picture</label>
                             <div className="flex items-center space-x-4">

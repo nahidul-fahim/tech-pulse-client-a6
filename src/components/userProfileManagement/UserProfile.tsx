@@ -15,6 +15,7 @@ import useCurrentUser from '@/hooks/useCurrentUser';
 import { toast } from 'sonner';
 import { useUpdateUserMutation } from '@/redux/features/user/userApi';
 import useToken from '@/hooks/useToken';
+import { useGetUserAllPostsQuery } from '@/redux/features/post/postApi';
 
 const UserProfile = () => {
     const { data, isLoading, refetch } = useCurrentUser();
@@ -24,6 +25,9 @@ const UserProfile = () => {
     const [initialUserData, setInitialUserData] = useState<any>({});
     const [profileImg, setProfileImg] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const { data: allPosts, isLoading: allPostsLoading } = useGetUserAllPostsQuery({
+        token: token as string,
+    });
 
     // Update initial user data when loading completes
     useEffect(() => {
@@ -78,10 +82,11 @@ const UserProfile = () => {
         setInitialUserData({ ...initialUserData, ...updatedData });
     };
 
-    if (isLoading) {
+    if (isLoading || allPostsLoading) {
         return <div>Loading...</div>;
     }
 
+    const totalPosts = allPosts?.data?.totalPosts;
     const user = data?.data;
 
     return (
@@ -114,15 +119,15 @@ const UserProfile = () => {
 
                 <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
-                        <p className="text-2xl font-bold">{user.posts}</p>
+                        <p className="text-2xl font-bold">{totalPosts}</p>
                         <p className="text-muted-foreground">Posts</p>
                     </div>
                     <div>
-                        <p className="text-2xl font-bold">{user.followers}</p>
+                        <p className="text-2xl font-bold">{user?.followers?.length}</p>
                         <p className="text-muted-foreground">Followers</p>
                     </div>
                     <div>
-                        <p className="text-2xl font-bold">{user.following}</p>
+                        <p className="text-2xl font-bold">{user?.following.length}</p>
                         <p className="text-muted-foreground">Following</p>
                     </div>
                 </div>

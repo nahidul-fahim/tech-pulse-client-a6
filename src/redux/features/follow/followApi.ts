@@ -26,17 +26,21 @@ const followApi = baseApi.injectEndpoints({
                 }
             })
         }),
-        // get user payments
-        // userPayments: builder.query({
-        //     query: ({ id }: { id: string }) => ({
-        //         url: `/payment/user-payments/${id}`,
-        //         method: 'GET',
-        //     })
-        // }),
+        // get user followers
+        followingList: builder.query({
+            query: ({ token, userId }: { token: string, userId: string }) => ({
+                url: `/follow/user-following/${userId}`,
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+        }),
     }),
 })
 
 export const {
     useFollowUserMutation,
     useUnfollowUserMutation,
+    useFollowingListQuery
 } = followApi;

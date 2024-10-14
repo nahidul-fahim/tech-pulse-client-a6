@@ -7,30 +7,14 @@ import { UserManagement } from './UserManagement';
 import { ContentManagement } from './ContentManagement';
 import { AdminControls } from './AdminControls';
 import PaymentHistory from './PaymentHistory';
-import { useAppDispatch } from '@/redux/hooks';
-import { useRouter } from 'next/navigation';
-import { logout } from '@/redux/features/auth/authSlice';
 
 const AdminDashboard: React.FC = () => {
-    const dispatch = useAppDispatch();
-    const router = useRouter();
-
-    const handleLogout = () => {
-        dispatch(logout());
-        router.push('/signin');
-    };
 
     return (
         <div className="container mx-auto p-4 space-y-4">
             {/* Header with logout button */}
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold text-primary">Admin Dashboard</h1>
-                <button
-                    onClick={handleLogout}
-                    className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-all"
-                >
-                    Logout
-                </button>
             </div>
 
             {/* Breadcrumb */}

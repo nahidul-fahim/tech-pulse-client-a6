@@ -19,42 +19,42 @@ const teamMembers: TeamMember[] = [
   {
     name: "Alice Johnson",
     role: "Founder & CEO",
-    bio: "With over 15 years of experience in tech, Alice founded Tech Tips & Tricks to make technology accessible to everyone.",
-    image: "/api/placeholder/150/150",
+    bio: "With over 15 years of experience in tech, Alice founded Tech Pulse to make technology accessible to everyone.",
+    image: "/person/1.png",
     social: {
-      github: "https://github.com/alicej",
-      linkedin: "https://linkedin.com/in/alicej",
-      twitter: "https://twitter.com/alicej"
+      github: "",
+      linkedin: "",
+      twitter: ""
     }
   },
   {
     name: "Bob Smith",
     role: "CTO",
     bio: "Bob brings 10 years of software engineering expertise, ensuring our platform runs smoothly and securely.",
-    image: "/api/placeholder/150/150",
+    image: "/person/2.png",
     social: {
-      github: "https://github.com/bobs",
-      linkedin: "https://linkedin.com/in/bobs"
+      github: "",
+      linkedin: ""
     }
   },
   {
     name: "Carol Martinez",
     role: "Head of Content",
     bio: "Carol's background in tech journalism helps shape our content strategy and ensure quality across all posts.",
-    image: "/api/placeholder/150/150",
+    image: "/person/3.png",
     social: {
-      linkedin: "https://linkedin.com/in/carolm",
-      twitter: "https://twitter.com/carolm"
+      linkedin: "",
+      twitter: ""
     }
   },
   {
     name: "David Lee",
     role: "Community Manager",
     bio: "David fosters our vibrant community, moderating discussions and organizing virtual events.",
-    image: "/api/placeholder/150/150",
+    image: "/person/1.png",
     social: {
-      linkedin: "https://linkedin.com/in/davidl",
-      twitter: "https://twitter.com/davidl"
+      linkedin: "",
+      twitter: ""
     }
   }
 ];
@@ -63,8 +63,8 @@ const AboutUs: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-6xl mx-auto p-4 py-8">
-        <h1 className="text-4xl font-bold text-primary mb-8 text-center">About Tech Tips & Tricks</h1>
-        
+        <h1 className="text-4xl font-bold text-primary mb-8 text-center">About Tech Pulse</h1>
+
         <Card className="mb-8 shadow">
           <CardHeader>
             <CardTitle className="text-2xl font-semibold text-primary flex items-center">
@@ -73,7 +73,7 @@ const AboutUs: React.FC = () => {
           </CardHeader>
           <CardContent className="text-body">
             <p>
-              At Tech Tips & Tricks, our mission is to democratize technology knowledge. We strive to empower individuals with practical tech solutions, tutorials, and insights that enhance their digital lives. Our platform is designed to make complex tech concepts accessible to everyone, regardless of their background or expertise level.
+              At Tech Pulse, our mission is to democratize technology knowledge. We strive to empower individuals with practical tech solutions, tutorials, and insights that enhance their digital lives. Our platform is designed to make complex tech concepts accessible to everyone, regardless of their background or expertise level.
             </p>
           </CardContent>
         </Card>

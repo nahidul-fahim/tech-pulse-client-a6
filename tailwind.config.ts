@@ -11,8 +11,8 @@ const config: Config = {
 	theme: {
 		extend: {
 			colors: {
-				primary: "#7C3AED",
-				secondary: "#000080",
+				primary: "#5711cf",
+				secondary: "#00006b",
 				body: "#464646"
 			},
 			borderRadius: {

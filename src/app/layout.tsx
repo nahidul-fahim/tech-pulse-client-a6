@@ -3,6 +3,8 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import Providers from "@/lib/Providers";
 import { Toaster } from "@/components/ui/sonner";
+import Header from "@/components/header/Header";
+import Footer from "@/components/footer/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,11 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} antialiased min-h-screen`}
+        className={`${inter.variable} antialiased min-h-screen flex flex-col`}
       >
         <Providers>
-
-          {children}
+          <Header />
+          <main className="flex-grow">{children}</main>
+          <Footer />
         </Providers>
         <Toaster />
       </body>

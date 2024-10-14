@@ -70,9 +70,9 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
         if (!element) return
 
         const options = {
-            margin: 0.5,
+            margin: 1,
             filename: `${data?.data?.title}-tech-pulse.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
+            image: { type: 'jpeg', quality: 0.5 },
             html2canvas: {
                 scale: 2,
                 backgroundColor: '#000',
@@ -153,100 +153,85 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
     const isFollowing = singlePost?.user?.followers.includes(currentUser?._id);
 
     return (
-        <div ref={contentRef} className="max-w-4xl mx-auto p-4">
-            <Card className="mb-8 shadow-lg overflow-hidden">
-                <Image src={singlePost?.featuredImg} alt={singlePost.title} width={200} height={100} className="w-full h-64 object-cover" />
+<div ref={contentRef} className="max-w-4xl mx-auto p-4 bg-gradient-to-b from-background to-background/80">
+            <Card className="mb-8 shadow-lg overflow-hidden border-none bg-card/50 backdrop-blur-sm">
+                <div className="relative">
+                    <Image src={singlePost?.featuredImg} alt={singlePost.title} width={1000} height={500} className="w-full h-80 object-cover" />
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+                        <span className="text-sm font-medium text-primary-foreground bg-primary text-white px-3 py-1 rounded-full">{singlePost?.category}</span>
+                        <h1 className="text-3xl font-bold text-white mt-2">{singlePost?.title}</h1>
+                    </div>
+                </div>
                 <CardHeader>
-                    {/* Breadcrumb */}
-                    <div className="text-sm breadcrumbs mb-4">
-                        <ul className="flex space-x-2 text-gray-600">
-                            <li><a href="/" className="hover:underline">Home</a></li>
-                            <li>&gt;</li>
-                            <li className="text-primary font-semibold">Post Details</li>
-                        </ul>
-                    </div>
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-secondary bg-secondary/10 px-2 py-1 rounded">{singlePost?.category}</span>
-                        <div className="flex items-center text-secondary space-x-4">
-                            <Button variant="ghost" onClick={() => handleVotePost(true)} className="flex items-center">
-                                <ThumbsUp className={`mr-1 h-4 w-4 ${singlePost?.userHasUpvoted ? 'text-primary' : ''}`} /> {singlePost?.upvoteCount}
-                            </Button>
-                            <Button variant="ghost" onClick={() => handleVotePost(false)} className="flex items-center">
-                                <ThumbsDown className={`mr-1 h-4 w-4 ${singlePost?.userHasDownvoted ? 'text-primary' : ''}`} /> {singlePost?.downvoteCount}
-                            </Button>
-                            <span className="flex items-center">
-                                <MessageSquare className="mr-1 h-4 w-4" /> {singlePost?.comments.length}
-                            </span>
-                        </div>
-                    </div>
-                    <CardTitle className="text-3xl font-bold text-primary my-2">{singlePost?.title}</CardTitle>
-                    <div className="flex items-center justify-between text-sm text-secondary mt-5">
-                        <div className="flex items-center">
-                            <Avatar className="h-8 w-8 mr-2">
+                    <div className="flex items-center justify-between text-sm text-secondary">
+                        <div className="flex items-center space-x-4">
+                            <Avatar className="h-10 w-10 border-2 border-primary">
                                 <AvatarImage src={singlePost?.user?.profileImg} alt={singlePost?.user?.name} />
                                 <AvatarFallback>{singlePost?.user?.name[0]}</AvatarFallback>
                             </Avatar>
                             <div className="flex flex-col">
-                                <span className="font-semibold">{singlePost?.user?.name}</span>
-                                <span className="text-xs">{singlePost?.user?.username}</span>
+                                <span className="font-semibold text-foreground">{singlePost?.user?.name}</span>
                             </div>
                         </div>
-                        <div className='flex justify-end items-center gap-2'>
-                            {
-                                !isTheSameUser && (
-                                    <Button variant={isFollowing ? "default" : "outline"} onClick={() => handleFollow(isFollowing ? 'unfollow' : 'follow')}>
-                                        {isFollowing ? 'Following' : 'Follow'}
-                                    </Button>
-                                )
-                            }
-                            <Button variant={"outline"} onClick={handleDownload}><FileText className='w-4 h-4 mr-1' />PDF</Button>
+                        <div className='flex items-center space-x-2'>
+                            {!isTheSameUser && (
+                                <Button 
+                                    variant={isFollowing ? "default" : "outline"} 
+                                    onClick={() => handleFollow(isFollowing ? 'unfollow' : 'follow')}
+                                    className="rounded-full"
+                                >
+                                    {isFollowing ? 'Following' : 'Follow'}
+                                </Button>
+                            )}
+                            <Button variant="outline" onClick={handleDownload} className="rounded-full">
+                                <FileText className='w-4 h-4 mr-2' />PDF
+                            </Button>
                         </div>
                     </div>
-                    <div className="flex items-center text-xs text-secondary mt-5">
-                        <Calendar className="mr-1 h-4 w-4" />
+                    <div className="flex items-center text-xs text-secondary mt-4">
+                        <Calendar className="mr-2 h-4 w-4" />
                         {new Date(singlePost?.createdAt).toLocaleDateString()}
                     </div>
                 </CardHeader>
                 <CardContent>
                     <div
                         dangerouslySetInnerHTML={{ __html: singlePost?.description }}
-                        className="blog lg:pr-40 text-justify"
+                        className="blog lg:pr-40 text-justify prose prose-sm max-w-none"
                     ></div>
                 </CardContent>
-                <CardFooter className='flex justify-start items-center gap-3'>
-                    {/* <Button variant="outline" className="ml-auto">
-                        <Share2 className="mr-2 h-5 w-5" /> Share
-                    </Button> */}
-                    <FacebookShareButton url={shareUrl}>
-                        <FacebookIcon size={32} round />
-                    </FacebookShareButton>
-                    <TwitterShareButton
-                        url={shareUrl}
-                        title={title}
-                    >
-                        <XIcon size={32} round />
-                    </TwitterShareButton>
-                    <LinkedinShareButton url={shareUrl} className="Demo__some-network__share-button">
-                        <LinkedinIcon size={32} round />
-                    </LinkedinShareButton>
-                    <TelegramShareButton
-                        url={shareUrl}
-                        title={title}
-                        className="Demo__some-network__share-button"
-                    >
-                        <TelegramIcon size={32} round />
-                    </TelegramShareButton>
-                    <WhatsappShareButton
-                        url={shareUrl}
-                        title={title}
-                        separator=":: "
-                    >
-                        <WhatsappIcon size={32} round />
-                    </WhatsappShareButton>
+                <CardFooter className='flex justify-between items-center border-t border-border/50 mt-6 pt-4'>
+                    <div className="flex items-center space-x-4">
+                        <Button variant="ghost" onClick={() => handleVotePost(true)} className="flex items-center">
+                            <ThumbsUp className={`mr-1 h-4 w-4 ${singlePost?.userHasUpvoted ? 'text-primary' : ''}`} /> {singlePost?.upvoteCount}
+                        </Button>
+                        <Button variant="ghost" onClick={() => handleVotePost(false)} className="flex items-center">
+                            <ThumbsDown className={`mr-1 h-4 w-4 ${singlePost?.userHasDownvoted ? 'text-primary' : ''}`} /> {singlePost?.downvoteCount}
+                        </Button>
+                        <span className="flex items-center">
+                            <MessageSquare className="mr-1 h-4 w-4" /> {singlePost?.comments.length}
+                        </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <FacebookShareButton url={shareUrl}>
+                            <FacebookIcon size={32} round />
+                        </FacebookShareButton>
+                        <TwitterShareButton url={shareUrl} title={title}>
+                            <XIcon size={32} round />
+                        </TwitterShareButton>
+                        <LinkedinShareButton url={shareUrl}>
+                            <LinkedinIcon size={32} round />
+                        </LinkedinShareButton>
+                        <TelegramShareButton url={shareUrl} title={title}>
+                            <TelegramIcon size={32} round />
+                        </TelegramShareButton>
+                        <WhatsappShareButton url={shareUrl} title={title} separator=":: ">
+                            <WhatsappIcon size={32} round />
+                        </WhatsappShareButton>
+                    </div>
                 </CardFooter>
             </Card>
 
-            <Card className="mb-8 shadow-lg">
+            <Card className="mb-8 shadow-lg border-none bg-card/50 backdrop-blur-sm">
                 <CardHeader>
                     <CardTitle className="text-2xl font-semibold text-primary">Comments</CardTitle>
                 </CardHeader>
@@ -255,9 +240,9 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
                         placeholder="Add a comment..."
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
-                        className="mb-2"
+                        className="mb-2 bg-background/50"
                     />
-                    <Button onClick={handleAddComment} className="w-full bg-primary text-white hover:bg-primary/90">
+                    <Button onClick={handleAddComment} variant={"default"} className='w-full'>
                         Post Comment
                     </Button>
                 </CardContent>
@@ -265,15 +250,15 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
 
             <div className="space-y-4">
                 {allComments?.map((comment: any) => (
-                    <Card key={comment.id} className="shadow">
+                    <Card key={comment.id} className="shadow border-none bg-card/50 backdrop-blur-sm">
                         <CardHeader>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center">
-                                    <Avatar className="h-6 w-6 mr-2">
+                                    <Avatar className="h-8 w-8 mr-2 border border-primary">
                                         <AvatarImage src={comment?.user?.profileImg} alt={comment?.user?.name} />
                                         <AvatarFallback>{comment?.user?.name[0]}</AvatarFallback>
                                     </Avatar>
-                                    <span className="font-semibold text-secondary">{comment?.user?.name}</span>
+                                    <span className="font-semibold text-foreground">{comment?.user?.name}</span>
                                 </div>
                                 <span className="text-xs text-secondary">
                                     {(comment.createdAt && new Date(comment.createdAt).toLocaleDateString())}
@@ -285,7 +270,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
                                 <Textarea
                                     defaultValue={comment?.comment}
                                     onChange={(e) => setEditedCommentContent(e.target.value)}
-                                    className="mb-2"
+                                    className="mb-2 bg-background/50"
                                 />
                             ) : (
                                 <p className="text-body">{comment?.comment}</p>
@@ -293,17 +278,15 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
                         </CardContent>
                         <CardFooter className={`${currentUser?._id === comment?.user?._id ? 'flex justify-end' : 'hidden'} space-x-1`}>
                             {!showEditCommentBox && (
-                                <Button variant={"ghost"} onClick={() => setShowEditCommentBox(true)}>
+                                <Button variant="ghost" onClick={() => setShowEditCommentBox(true)}>
                                     <Edit2 className="h-4 w-4 mr-1" />
                                 </Button>
                             )}
-                            {
-                                showEditCommentBox && (
-                                    <Button variant="ghost" onClick={() => handleEditComment(comment._id)}>
-                                        Save
-                                    </Button>
-                                )
-                            }
+                            {showEditCommentBox && (
+                                <Button variant="ghost" onClick={() => handleEditComment(comment._id)}>
+                                    Save
+                                </Button>
+                            )}
                             <Button variant="ghost" onClick={() => handleDeleteComment(comment._id)}>
                                 <Trash2 className="h-4 w-4" />
                             </Button>
