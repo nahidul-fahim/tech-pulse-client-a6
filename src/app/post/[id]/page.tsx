@@ -28,6 +28,7 @@ import {
 } from "react-share";
 import { useFollowUserMutation, useUnfollowUserMutation } from '@/redux/features/follow/followApi';
 import Loading from '@/components/loading/Loading';
+import { toast } from 'sonner';
 
 interface PostDetailsProps {
     params: {
@@ -87,6 +88,9 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
 
     // upvote/downvote logic
     const handleVotePost = async (vote: boolean) => {
+        if (!token) {
+            return toast.warning('Please sign in', { duration: 2000 });
+        }
         if (vote === true) {
             const voteData = { voteStatus: true };
             await votePost({ token: token, id: id, voteType: voteData });
@@ -100,6 +104,9 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
 
     // handle add new comment
     const handleAddComment = async () => {
+        if (!token) {
+            return toast.warning('Please sign in', { duration: 2000 });
+        }
         const commentData = { comment: newComment }
         await createNewComment({ token: token, postId: id, commentInfo: commentData })
         setNewComment('');
@@ -109,6 +116,9 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
 
     // handle follow user
     const handleFollow = async (followStatus: string) => {
+        if (!token) {
+            return toast.warning('Please sign in', { duration: 2000 });
+        }
         const currentUserId = currentUserData?.data?._id;
         const targetUserId = singlePost?.user?._id;
         const followData = {
@@ -126,6 +136,9 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
 
     // edit comment
     const handleEditComment = async (commentId: string) => {
+        if (!token) {
+            return toast.warning('Please sign in', { duration: 2000 });
+        }
         const updatedCommentData = { comment: editedCommentContent }
         await updateComment({ token: token, commentId: commentId, commentInfo: updatedCommentData })
         setEditedCommentContent('');
@@ -136,6 +149,9 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
 
     // handle delete comment
     const handleDeleteComment = async (commentId: string) => {
+        if (!token) {
+            return toast.warning('Please sign in', { duration: 2000 });
+        }
         await deleteComment({ token: token, commentId: commentId });
         refetch();
         commentRefetch();

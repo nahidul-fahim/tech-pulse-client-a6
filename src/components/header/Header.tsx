@@ -15,22 +15,21 @@ import { Home, Info, Mail, User, LogOut, LayoutDashboard, Menu, X, Cpu } from 'l
 
 // Assume we have these hooks and utilities
 import useCurrentUser from '@/hooks/useCurrentUser';
-import { useAppDispatch } from '@/redux/hooks';
-import { logout } from '@/redux/features/auth/authSlice';
 import { disableHeaderFooter } from '@/utils/disableHeaderFooter';
 import { Skeleton } from '../ui/skeleton';
+import useLogout from '@/hooks/useLogout';
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const { data: currentUser, isLoading } = useCurrentUser();
-    const dispatch = useAppDispatch();
+    const { data: currentUser, isLoading, refetch } = useCurrentUser();
     const router = useRouter();
     const path = usePathname();
+    const logoutUser = useLogout();
 
 
     const handleLogout = async () => {
-        dispatch(logout());
-        router.push('/signin');
+        logoutUser();
+        refetch();
     };
 
     const navItems = [
