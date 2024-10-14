@@ -44,6 +44,9 @@ const PostEditor = ({ post = null, refetch }: { post: TSinglePost | null, refetc
 
   // submit the data
   const onSubmit = async (data: FieldValues) => {
+    if (!token) {
+      return toast.warning('Please sign in', { duration: 2000 });
+    }
     const toastId = toast.loading('Creating post...');
     try {
       const formData = new FormData();

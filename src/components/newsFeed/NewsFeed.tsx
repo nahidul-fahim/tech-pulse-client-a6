@@ -69,7 +69,7 @@ const NewsFeed: React.FC = () => {
         setPage(1);
         setAllPosts([]);
         setHasMore(true);
-        setSidebarOpen(false); // Close sidebar on mobile after selection
+        setSidebarOpen(false);
     };
 
     const loadMore = () => {
@@ -145,7 +145,7 @@ const NewsFeed: React.FC = () => {
                     next={loadMore}
                     hasMore={hasMore}
                     loader={
-                        <div className="flex justify-center items-center h-20 my-6">
+                        isLoading && <div className="flex justify-center items-center h-20 my-6">
                             <div className="flex items-center space-x-4">
                                 <Skeleton className="h-20 w-20 rounded-full" />
                                 <div className="space-y-2">
@@ -157,50 +157,60 @@ const NewsFeed: React.FC = () => {
                     }
                 >
                     <div className="space-y-6">
-                        {allPosts.map((post: any) => (
-                            <Card key={post._id} className="shadow-none overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                                <CardContent className="p-4">
-                                    <div className="flex flex-col sm:flex-row">
-                                        <Image width={100} height={100} src={post.featuredImg} alt={post?.title} className="w-full sm:w-24 h-40 sm:h-24 object-cover rounded-md mb-4 sm:mb-0 sm:mr-4" />
-                                        <div className="flex-1">
-                                            <h3 className="text-xl font-semibold text-primary mb-2">{post?.title}</h3>
-                                            <p
-                                                className="text-body mb-2"
-                                                dangerouslySetInnerHTML={{
-                                                    __html: post?.description
-                                                        .replace(/<[^>]*>/g, ' ')
-                                                        .replace(/\s+/g, ' ')
-                                                        .trim()
-                                                        .split(' ')
-                                                        .slice(0, 30)
-                                                        .join(' ') + '...',
-                                                }}
-                                            ></p>
-                                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2 sm:mt-0">
-                                                <div className="flex items-center space-x-4 text-black mb-2 sm:mb-0">
-                                                    <span className="flex items-center">
-                                                        <ThumbsUp className="mr-1 h-4 w-4" /> {post?.upvoteCount}
-                                                    </span>
-                                                    <span className="flex items-center">
-                                                        <ThumbsDown className="mr-1 h-4 w-4" /> {post?.downvoteCount}
-                                                    </span>
-                                                    <span className="text-sm font-medium text-secondary bg-secondary/10 px-2 py-1 rounded">{post?.category}</span>
-                                                    {
-                                                        post?.isPremium && <span className="text-sm font-medium bg-orange-100 px-2 py-1 rounded text-orange-600">Premium</span>
-                                                    }
+                        {
+                            allPosts.length === 0 ? (
+                                <div className="text-center">
+                                    <p className="text-gray-500">No posts found.</p>
+                                </div>
+                            )
+                                :
+                                <>
+                                    {allPosts.map((post: any) => (
+                                        <Card key={post._id} className="shadow-none overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                                            <CardContent className="p-4">
+                                                <div className="flex flex-col sm:flex-row">
+                                                    <Image width={100} height={100} src={post.featuredImg} alt={post?.title} className="w-full sm:w-24 h-40 sm:h-24 object-cover rounded-md mb-4 sm:mb-0 sm:mr-4" />
+                                                    <div className="flex-1">
+                                                        <h3 className="text-xl font-semibold text-primary mb-2">{post?.title}</h3>
+                                                        <p
+                                                            className="text-body mb-2"
+                                                            dangerouslySetInnerHTML={{
+                                                                __html: post?.description
+                                                                    .replace(/<[^>]*>/g, ' ')
+                                                                    .replace(/\s+/g, ' ')
+                                                                    .trim()
+                                                                    .split(' ')
+                                                                    .slice(0, 30)
+                                                                    .join(' ') + '...',
+                                                            }}
+                                                        ></p>
+                                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2 sm:mt-0">
+                                                            <div className="flex items-center space-x-4 text-black mb-2 sm:mb-0">
+                                                                <span className="flex items-center">
+                                                                    <ThumbsUp className="mr-1 h-4 w-4" /> {post?.upvoteCount}
+                                                                </span>
+                                                                <span className="flex items-center">
+                                                                    <ThumbsDown className="mr-1 h-4 w-4" /> {post?.downvoteCount}
+                                                                </span>
+                                                                <span className="text-sm font-medium text-secondary bg-secondary/10 px-2 py-1 rounded">{post?.category}</span>
+                                                                {
+                                                                    post?.isPremium && <span className="text-sm font-medium bg-orange-100 px-2 py-1 rounded text-orange-600">Premium</span>
+                                                                }
 
+                                                            </div>
+                                                            <Link href={`/post/${post?._id}`} passHref>
+                                                                <Button variant="outline" size="sm" className="flex items-center">
+                                                                    Read More <ArrowRight className="ml-2 h-4 w-4" />
+                                                                </Button>
+                                                            </Link>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <Link href={`/post/${post?._id}`} passHref>
-                                                    <Button variant="outline" size="sm" className="flex items-center">
-                                                        Read More <ArrowRight className="ml-2 h-4 w-4" />
-                                                    </Button>
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </>
+                        }
                     </div>
                 </InfiniteScroll>
             </div>
