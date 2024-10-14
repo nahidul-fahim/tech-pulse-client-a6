@@ -3,7 +3,7 @@ import { verifyToken } from '@/utils/verifyToken';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
-export const middleware = (req: NextRequest) => {
+export const middleware = async (req: NextRequest) => {
     const token = cookies().get('token')?.value;
     const user = verifyToken(token!) as TUser;
 
@@ -13,4 +13,4 @@ export const middleware = (req: NextRequest) => {
     }
 };
 
-export const config = { matcher: ['/admin-dashboard'] };
+export const config = { matcher: ['/admin-dashboard/:path*'] };

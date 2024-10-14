@@ -2,7 +2,7 @@
 import { baseApi } from "@/redux/api/baseApi";
 
 
-const commentApi = baseApi.injectEndpoints({
+const paymentApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         // create new payment
         makePayment: builder.mutation({
@@ -39,4 +39,4 @@ export const {
     useMakePaymentMutation,
     useAllPaymentsQuery,
     useUserPaymentsQuery
-} = commentApi;
+} = paymentApi;

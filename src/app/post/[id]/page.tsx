@@ -1,18 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ThumbsUp, ThumbsDown, MessageSquare, Calendar, Edit2, Trash2 } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MessageSquare, Calendar, Edit2, Trash2, FileText } from "lucide-react";
 import { useGetSinglePostQuery, useVotePostMutation } from '@/redux/features/post/postApi';
 import useToken from '@/hooks/useToken';
 import { useCreateNewCommentMutation, useDeleteCommentMutation, useSinglePostCommentsQuery, useUpdateCommentMutation } from '@/redux/features/comment/commentApi';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import html2pdf from 'html2pdf.js'
 import {
     FacebookShareButton,
     LinkedinShareButton,
@@ -25,6 +26,7 @@ import {
     WhatsappIcon,
     XIcon,
 } from "react-share";
+import { useFollowUserMutation, useUnfollowUserMutation } from '@/redux/features/follow/followApi';
 
 interface PostDetailsProps {
     params: {
@@ -46,18 +48,41 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
     const [editedCommentContent, setEditedCommentContent] = useState('');
     const [showEditCommentBox, setShowEditCommentBox] = useState(false);
     const router = useRouter();
+    const [followUser] = useFollowUserMutation();
+    const [unfollowUser] = useUnfollowUserMutation();
+    const contentRef = useRef<HTMLDivElement | null>(null);
 
 
+    // premium article check
     useEffect(() => {
         if (!isLoading && !currentUserLoading) {
             const isSubscribed = currentUserData?.data?.isSubscribed;
             const currentPostStatus = data?.data?.isPremium;
             if (currentPostStatus && !isSubscribed) {
-                console.log('User is subscribed and post is premium');
                 router.push('/upgrade-premium')
             }
         }
     }, [currentUserData?.data?.isSubscribed, data?.data?.isPremium, isLoading, currentUserLoading, router])
+
+    // handle pdf download
+    const handleDownload = () => {
+        const element = contentRef.current
+        if (!element) return
+
+        const options = {
+            margin: 0.5,
+            filename: `${data?.data?.title}-tech-pulse.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                backgroundColor: '#000',
+                useCORS: true
+            },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        }
+
+        html2pdf().from(element).set(options).save()
+    }
 
     // upvote/downvote logic
     const handleVotePost = async (vote: boolean) => {
@@ -81,8 +106,20 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
         commentRefetch();
     };
 
-    const handleFollow = async () => {
-        // await followAuthor(singlePost.user.id);
+    // handle follow user
+    const handleFollow = async (followStatus: string) => {
+        const currentUserId = currentUserData?.data?._id;
+        const targetUserId = singlePost?.user?._id;
+        const followData = {
+            userId: currentUserId,
+            targetUserId: targetUserId,
+        }
+        if (followStatus === 'unfollow') {
+            await unfollowUser({ token: token, followInfo: followData })
+        }
+        if (followStatus === 'follow') {
+            await followUser({ token: token, followInfo: followData })
+        }
         refetch();
     };
 
@@ -112,9 +149,11 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
     const currentUser = currentUserData?.data;
     const shareUrl = `https://tech-pulse.vercel.app/post/${singlePost?.id}`;
     const title = singlePost?.title;
+    const isTheSameUser = currentUser?._id === singlePost?.user?._id;
+    const isFollowing = singlePost?.user?.followers.includes(currentUser?._id);
 
     return (
-        <div className="max-w-4xl mx-auto p-4">
+        <div ref={contentRef} className="max-w-4xl mx-auto p-4">
             <Card className="mb-8 shadow-lg overflow-hidden">
                 <Image src={singlePost?.featuredImg} alt={singlePost.title} width={200} height={100} className="w-full h-64 object-cover" />
                 <CardHeader>
@@ -140,8 +179,8 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
                             </span>
                         </div>
                     </div>
-                    <CardTitle className="text-3xl font-bold text-primary">{singlePost?.title}</CardTitle>
-                    <div className="flex items-center justify-between text-sm text-secondary mt-2">
+                    <CardTitle className="text-3xl font-bold text-primary my-2">{singlePost?.title}</CardTitle>
+                    <div className="flex items-center justify-between text-sm text-secondary mt-5">
                         <div className="flex items-center">
                             <Avatar className="h-8 w-8 mr-2">
                                 <AvatarImage src={singlePost?.user?.profileImg} alt={singlePost?.user?.name} />
@@ -152,11 +191,18 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
                                 <span className="text-xs">{singlePost?.user?.username}</span>
                             </div>
                         </div>
-                        <Button variant="outline" onClick={handleFollow}>
-                            {singlePost?.user?.isFollowed ? 'Following' : 'Follow'}
-                        </Button>
+                        <div className='flex justify-end items-center gap-2'>
+                            {
+                                !isTheSameUser && (
+                                    <Button variant={isFollowing ? "default" : "outline"} onClick={() => handleFollow(isFollowing ? 'unfollow' : 'follow')}>
+                                        {isFollowing ? 'Following' : 'Follow'}
+                                    </Button>
+                                )
+                            }
+                            <Button variant={"outline"} onClick={handleDownload}><FileText className='w-4 h-4 mr-1' />PDF</Button>
+                        </div>
                     </div>
-                    <div className="flex items-center text-xs text-secondary mt-2">
+                    <div className="flex items-center text-xs text-secondary mt-5">
                         <Calendar className="mr-1 h-4 w-4" />
                         {new Date(singlePost?.createdAt).toLocaleDateString()}
                     </div>
@@ -251,9 +297,13 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
                                     <Edit2 className="h-4 w-4 mr-1" />
                                 </Button>
                             )}
-                            <Button variant="ghost" onClick={() => handleEditComment(comment._id)}>
-                                {showEditCommentBox && 'Save'}
-                            </Button>
+                            {
+                                showEditCommentBox && (
+                                    <Button variant="ghost" onClick={() => handleEditComment(comment._id)}>
+                                        Save
+                                    </Button>
+                                )
+                            }
                             <Button variant="ghost" onClick={() => handleDeleteComment(comment._id)}>
                                 <Trash2 className="h-4 w-4" />
                             </Button>
