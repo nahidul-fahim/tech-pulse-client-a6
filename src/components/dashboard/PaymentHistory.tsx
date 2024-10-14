@@ -4,12 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { useAllPaymentsQuery } from "@/redux/features/payment/paymentApi";
 import useToken from "@/hooks/useToken";
+import Loading from "../loading/Loading";
 const PaymentHistory = () => {
     const token = useToken();
     const { data, isLoading } = useAllPaymentsQuery({ token });
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     const paymentData = data?.data?.payments;

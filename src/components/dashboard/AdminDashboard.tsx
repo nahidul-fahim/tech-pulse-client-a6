@@ -1,12 +1,13 @@
 "use client"
 
 import React from 'react';
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserManagement } from './UserManagement';
 import { ContentManagement } from './ContentManagement';
 import { AdminControls } from './AdminControls';
 import PaymentHistory from './PaymentHistory';
+import { DashboardGraphs } from './DashboardGraphs';
 
 const AdminDashboard: React.FC = () => {
 
@@ -43,9 +44,9 @@ const AdminDashboard: React.FC = () => {
                             <CardTitle>Dashboard Overview</CardTitle>
                         </CardHeader>
                         {/* Uncomment below to display dashboard graphs */}
-                        {/* <CardContent>
+                        <CardContent>
                             <DashboardGraphs />
-                        </CardContent> */}
+                        </CardContent>
                     </Card>
                 </TabsContent>
 

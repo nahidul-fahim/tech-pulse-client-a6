@@ -24,6 +24,7 @@ import useToken from "@/hooks/useToken";
 import { toast } from "sonner";
 import { categories } from "@/static/allCategories";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import Loading from "../loading/Loading";
 
 const MyPostsTable = () => {
     const [searchTerm, setSearchTerm] = useState("");
@@ -56,7 +57,7 @@ const MyPostsTable = () => {
     };
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Loading />
     }
     const allPosts = data?.data?.posts;
     const totalPages = data?.data?.totalPages;

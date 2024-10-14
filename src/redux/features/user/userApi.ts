@@ -45,7 +45,18 @@ const userApi = baseApi.injectEndpoints({
                     'Authorization': `Bearer ${token}`
                 }
             })
-        })
+        }),
+
+        // admin dashboard data
+        adminDashboardData: builder.query({
+            query: ({ token }: { token: string }) => ({
+                url: `/admin-dashboard-data`,
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+        }),
     }),
 })
 
@@ -53,5 +64,6 @@ export const {
     useGetUserQuery,
     useGetAllUsersQuery,
     useUpdateUserMutation,
-    useManageUserMutation
+    useManageUserMutation,
+    useAdminDashboardDataQuery
 } = userApi;

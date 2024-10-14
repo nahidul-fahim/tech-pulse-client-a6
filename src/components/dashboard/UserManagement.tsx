@@ -29,6 +29,7 @@ import {
     AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import { toast } from "sonner";
+import Loading from "../loading/Loading";
 
 export const UserManagement: React.FC = () => {
     const token = useToken();
@@ -75,7 +76,7 @@ export const UserManagement: React.FC = () => {
     };
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     const allUsers = data?.data?.filter((user: any) => user.role !== "admin");

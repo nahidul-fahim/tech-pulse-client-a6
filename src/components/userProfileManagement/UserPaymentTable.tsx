@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { useUserPaymentsQuery } from "@/redux/features/payment/paymentApi";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useEffect, useState } from "react";
+import Loading from "../loading/Loading";
 const UserPaymentTable = () => {
     const { data: currentUserData, isLoading: currentUserLoading } = useCurrentUser();
     const [currentUsedId, setCurrentUsedId] = useState("");
@@ -17,7 +18,7 @@ const UserPaymentTable = () => {
     }, [currentUserData?.data?._id, currentUserLoading]);
 
     if (currentUserLoading || isLoading) {
-        return <div>Loading...</div>;
+        return <Loading />
     }
 
     const paymentData = data?.data;

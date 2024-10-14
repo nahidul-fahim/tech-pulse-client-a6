@@ -8,6 +8,7 @@ import { useFollowingListQuery, useUnfollowUserMutation } from "@/redux/features
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import useToken from "@/hooks/useToken";
 import { Button } from "../ui/button";
+import Loading from "../loading/Loading";
 
 const FollowingTable = () => {
     const token = useToken();
@@ -26,7 +27,7 @@ const FollowingTable = () => {
     }
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Loading />
     }
 
     const followingList = data?.data;

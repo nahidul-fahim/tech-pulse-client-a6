@@ -7,6 +7,7 @@ import useCurrentUser from '@/hooks/useCurrentUser';
 import { useMakePaymentMutation } from '@/redux/features/payment/paymentApi';
 import useToken from '@/hooks/useToken';
 import Link from 'next/link';
+import Loading from '@/components/loading/Loading';
 
 const UpgradePremium: React.FC = () => {
 
@@ -27,7 +28,7 @@ const UpgradePremium: React.FC = () => {
     }
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Loading />
     }
 
     const currentUser = data?.data;

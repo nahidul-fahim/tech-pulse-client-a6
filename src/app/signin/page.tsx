@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Eye, EyeClosed, Loader2 } from "lucide-react";
+import { Cpu, Eye, EyeClosed, Loader2 } from "lucide-react";
 import RHFormProvider from '@/components/form/RHFromProvider';
 import RHInput from '@/components/form/RHInput';
 import { toast } from 'sonner';
@@ -14,6 +14,7 @@ import { setUser, TUser } from '@/redux/features/auth/authSlice';
 import { useAppDispatch } from '@/redux/hooks';
 import { setCookie } from 'cookies-next';
 import { useState } from 'react';
+import Link from 'next/link';
 
 const SignIn: React.FC = () => {
     const router = useRouter();
@@ -61,7 +62,10 @@ const SignIn: React.FC = () => {
         <div className="flex items-center justify-center min-h-screen bg-gray-50">
             <Card className="w-[400px] shadow-md">
                 <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-bold text-center text-primary">Welcome back</CardTitle>
+                    <div className="flex items-center justify-center">
+                        <Cpu className='mr-1 text-primary w-7 h-7' />
+                        <CardTitle className="text-primary text-xl md:text-3xl font-bold text-center">Tech Pulse</CardTitle>
+                    </div>
                     <CardDescription className="text-center text-muted-foreground">
                         Enter your credentials to sign in
                     </CardDescription>
@@ -101,16 +105,17 @@ const SignIn: React.FC = () => {
                         </Button>
                     </RHFormProvider>
                 </CardContent>
-                <CardFooter className="flex flex-col space-y-2">
-                    <a href="/forgot-password" className="text-sm text-secondary hover:underline">
+                <CardFooter className='flex flex-col justify-center items-center'>
+                    <Link href="/forgot-password" className="text-sm text-secondary hover:underline">
                         Forgot Password?
-                    </a>
+                    </Link>
                     <p className="text-sm text-center text-muted-foreground w-full">
                         Don&apos;t have an account?{" "}
-                        <a href="/signup" className="text-primary hover:underline font-medium">
+                        <Link href="/signup" className="text-primary hover:underline font-medium">
                             Sign Up
-                        </a>
+                        </Link>
                     </p>
+                    <Link href="/" className='mt-2 underline underline-offset-2 text-body hover:text-primary flex justify-start items-center w-fit text-sm'>Back to Home</Link>
                 </CardFooter>
             </Card>
         </div>

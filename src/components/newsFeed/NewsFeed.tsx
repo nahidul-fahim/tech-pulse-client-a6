@@ -5,13 +5,15 @@ import Link from 'next/link';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, ThumbsUp, ThumbsDown, ArrowRight, Menu } from "lucide-react";
+import { ThumbsUp, ThumbsDown, ArrowRight, Menu } from "lucide-react";
 import { useGetAllPostsQuery } from '@/redux/features/post/postApi';
 import Image from 'next/image';
 import { categories } from '@/static/allCategories';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import PostEditor from '../postEditor/PostEditor';
+import Loading from '../loading/Loading';
+import { Skeleton } from '../ui/skeleton';
 
 const NewsFeed: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -77,7 +79,7 @@ const NewsFeed: React.FC = () => {
     };
 
     if (isLoading && page === 1) {
-        return <div>Loading...</div>
+        return <Loading />
     }
 
     return (
@@ -143,8 +145,14 @@ const NewsFeed: React.FC = () => {
                     next={loadMore}
                     hasMore={hasMore}
                     loader={
-                        <div className="flex justify-center items-center h-20">
-                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <div className="flex justify-center items-center h-20 my-6">
+                            <div className="flex items-center space-x-4">
+                                <Skeleton className="h-20 w-20 rounded-full" />
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-[400px]" />
+                                    <Skeleton className="h-4 w-[350px]" />
+                                </div>
+                            </div>
                         </div>
                     }
                 >

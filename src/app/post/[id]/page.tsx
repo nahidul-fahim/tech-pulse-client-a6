@@ -27,6 +27,7 @@ import {
     XIcon,
 } from "react-share";
 import { useFollowUserMutation, useUnfollowUserMutation } from '@/redux/features/follow/followApi';
+import Loading from '@/components/loading/Loading';
 
 interface PostDetailsProps {
     params: {
@@ -141,7 +142,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
     };
 
     if (isLoading || commentLoading || currentUserLoading) {
-        return <div className="flex justify-center items-center h-screen">Loading...</div>
+        return <Loading />
     }
 
     const singlePost = data?.data;
@@ -153,7 +154,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
     const isFollowing = singlePost?.user?.followers.includes(currentUser?._id);
 
     return (
-<div ref={contentRef} className="max-w-4xl mx-auto p-4 bg-gradient-to-b from-background to-background/80">
+        <div ref={contentRef} className="max-w-4xl mx-auto p-4 bg-gradient-to-b from-background to-background/80">
             <Card className="mb-8 shadow-lg overflow-hidden border-none bg-card/50 backdrop-blur-sm">
                 <div className="relative">
                     <Image src={singlePost?.featuredImg} alt={singlePost.title} width={1000} height={500} className="w-full h-80 object-cover" />
@@ -175,8 +176,8 @@ const PostDetails: React.FC<PostDetailsProps> = ({ params }) => {
                         </div>
                         <div className='flex items-center space-x-2'>
                             {!isTheSameUser && (
-                                <Button 
-                                    variant={isFollowing ? "default" : "outline"} 
+                                <Button
+                                    variant={isFollowing ? "default" : "outline"}
                                     onClick={() => handleFollow(isFollowing ? 'unfollow' : 'follow')}
                                     className="rounded-full"
                                 >

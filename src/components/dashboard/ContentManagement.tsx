@@ -23,6 +23,7 @@ import {
 import { toast } from "sonner";
 import { categories } from "@/static/allCategories";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import Loading from '../loading/Loading';
 
 
 export const ContentManagement: React.FC = () => {
@@ -56,7 +57,7 @@ export const ContentManagement: React.FC = () => {
     };
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Loading />
     }
 
     const allPosts = data?.data?.posts;

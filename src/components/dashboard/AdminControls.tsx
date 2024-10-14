@@ -22,6 +22,7 @@ import {
 import useCurrentUser from '@/hooks/useCurrentUser';
 import { EditAdminModal } from './EditAdminProfile';
 import { toast } from 'sonner';
+import Loading from '../loading/Loading';
 
 export const AdminControls: React.FC = () => {
     const token = useToken();
@@ -41,7 +42,7 @@ export const AdminControls: React.FC = () => {
     }
 
     if (isLoading || isCurrentUserLoading) {
-        return <div>Loading...</div>;
+        return <Loading />
     }
     const currentUser = currentUserData?.data;
     const allAdmins = data?.data?.filter((user: any) => user.role !== "user");

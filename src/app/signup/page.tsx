@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Eye, EyeClosed, Loader2, Upload } from "lucide-react";
+import { Cpu, Eye, EyeClosed, Loader2, Upload } from "lucide-react";
 import { useSignUpMutation } from '@/redux/features/auth/authApi';
 import { toast } from 'sonner';
 import RHFormProvider from '@/components/form/RHFromProvider';
@@ -15,6 +15,7 @@ import { verifyToken } from '@/utils/verifyToken';
 import { useAppDispatch } from '@/redux/hooks';
 import { setUser } from '@/redux/features/auth/authSlice';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const SignUp: React.FC = () => {
     const [profileImg, setProfileImg] = useState<File | null>(null);
@@ -99,7 +100,10 @@ const SignUp: React.FC = () => {
         <div className="flex items-center justify-center min-h-screen bg-gray-50">
             <Card className="w-[400px] shadow-md">
                 <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-bold text-center text-primary">Create an account</CardTitle>
+                    <div className="flex items-center justify-center">
+                        <Cpu className='mr-1 text-primary w-7 h-7' />
+                        <CardTitle className="text-primary text-xl md:text-3xl font-bold text-center">Tech Pulse</CardTitle>
+                    </div>
                     <CardDescription className="text-center text-muted-foreground">
                         Enter your details to sign up
                     </CardDescription>
@@ -172,13 +176,14 @@ const SignUp: React.FC = () => {
                         </Button>
                     </RHFormProvider>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className='flex flex-col justify-center items-center'>
                     <p className="text-sm text-center text-muted-foreground w-full">
                         Already have an account?{" "}
-                        <a href="/signin" className="text-primary hover:underline font-medium">
+                        <Link href="/signin" className="text-primary hover:underline font-medium">
                             Sign In
-                        </a>
+                        </Link>
                     </p>
+                    <Link href="/" className='mt-2 underline underline-offset-2 text-body hover:text-primary flex justify-start items-center w-fit text-sm'>Back to Home</Link>
                 </CardFooter>
             </Card>
         </div>

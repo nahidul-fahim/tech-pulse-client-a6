@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { useUpdateUserMutation } from '@/redux/features/user/userApi';
 import useToken from '@/hooks/useToken';
 import { useGetUserAllPostsQuery } from '@/redux/features/post/postApi';
+import Loading from '../loading/Loading';
 
 const UserProfile = () => {
     const { data, isLoading, refetch } = useCurrentUser();
@@ -83,7 +84,7 @@ const UserProfile = () => {
     };
 
     if (isLoading || allPostsLoading) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     const totalPosts = allPosts?.data?.totalPosts;
