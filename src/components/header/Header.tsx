@@ -40,6 +40,7 @@ const Header = () => {
         logoutUser();
         refetch();
         setUserIsPresent(false);
+        router.push("/");
     };
 
     const navItems = [
