@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import useCurrentUser from '@/hooks/useCurrentUser';
 import { disableHeaderFooter } from '@/utils/disableHeaderFooter';
 import { Skeleton } from '../ui/skeleton';
 import useLogout from '@/hooks/useLogout';
+import useToken from '@/hooks/useToken';
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,13 +26,20 @@ const Header = () => {
     const router = useRouter();
     const path = usePathname();
     const logoutUser = useLogout();
-    const [userIsNotPresent, setUserIsNotPresent] = useState(false);
+    const token = useToken();
+    const [userIsPresent, setUserIsPresent] = useState(false);
+
+    useEffect(() => {
+        if (token) {
+            setUserIsPresent(true);
+        }
+    }, [token])
 
 
     const handleLogout = async () => {
         logoutUser();
         refetch();
-        setUserIsNotPresent(!userIsNotPresent);
+        setUserIsPresent(false);
     };
 
     const navItems = [
@@ -85,7 +93,7 @@ const Header = () => {
                             <div className="hidden md:block">
                                 {isLoading ? (
                                     <Skeleton className="h-4 w-[150px]" />
-                                ) : currentUser ? (
+                                ) : userIsPresent ? (
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
