@@ -8,6 +8,7 @@ import { useMakePaymentMutation } from '@/redux/features/payment/paymentApi';
 import useToken from '@/hooks/useToken';
 import Link from 'next/link';
 import Loading from '@/components/loading/Loading';
+import { toast } from 'sonner';
 
 const UpgradePremium: React.FC = () => {
 
@@ -17,6 +18,9 @@ const UpgradePremium: React.FC = () => {
 
 
     const handlePayment = async () => {
+        if (!token) {
+            return toast.warning("Please sign in to continue");
+        }
         if (currentUser && token) {
             const info = { userId: currentUser._id }
             const res = await makePayment({ token: token, info: info })
@@ -43,7 +47,7 @@ const UpgradePremium: React.FC = () => {
                 </CardHeader>
                 <CardContent className='flex flex-col justify-center items-center'>
                     <p className="mb-4">
-                        To access this content, you need to upgrade your account to an admin package.
+                        To access this content, you need to upgrade your package.
                     </p>
                     <div className=' flex justify-center items-center gap-4'>
                         <Button onClick={handlePayment} variant={"default"}>

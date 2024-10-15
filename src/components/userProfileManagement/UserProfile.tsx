@@ -87,7 +87,7 @@ const UserProfile = () => {
         return <Loading />;
     }
 
-    const totalPosts = allPosts?.data?.totalPosts;
+    const totalPosts = allPosts?.data?.totalPosts || 0;
     const user = data?.data;
 
     return (
@@ -100,7 +100,7 @@ const UserProfile = () => {
                     </div>
                     <Button onClick={() => {
                         setIsEditing(true);
-                        setInitialUserData(user); // Set initial data when editing starts
+                        setInitialUserData(user);
                     }} variant="outline" className="flex items-center">
                         <Pen className="mr-2 size-4" /> Edit Profile
                     </Button>
