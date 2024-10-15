@@ -25,11 +25,13 @@ const Header = () => {
     const router = useRouter();
     const path = usePathname();
     const logoutUser = useLogout();
+    const [userIsNotPresent, setUserIsNotPresent] = useState(false);
 
 
     const handleLogout = async () => {
         logoutUser();
         refetch();
+        setUserIsNotPresent(!userIsNotPresent);
     };
 
     const navItems = [
