@@ -29,6 +29,8 @@ const Header = () => {
     const token = useToken();
     const [userIsPresent, setUserIsPresent] = useState(false);
 
+    console.log({ userIsPresent });
+
     useEffect(() => {
         if (token) {
             setUserIsPresent(true);
@@ -75,7 +77,7 @@ const Header = () => {
                                         {item.name}
                                     </Link>
                                 ))}
-                                {!isLoading && currentUser?.data?.role === 'admin' && (
+                                {!isLoading && userIsPresent && currentUser?.data?.role === 'admin' && (
                                     <Link href="/admin-dashboard" className="text-secondary hover:text-primary flex items-center">
                                         <LayoutDashboard className="w-4 h-4 mr-2" />
                                         Dashboard
@@ -99,7 +101,7 @@ const Header = () => {
                                         <DropdownMenuTrigger asChild>
                                             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                                                 <Avatar className="h-8 w-8">
-                                                    <AvatarImage src={currentUser.data?.profileImg} alt={currentUser.data?.name} />
+                                                    <AvatarImage src={currentUser?.data?.profileImg} alt={currentUser.data?.name} />
                                                     <AvatarFallback>{currentUser.data?.name?.[0]}</AvatarFallback>
                                                 </Avatar>
                                             </Button>
@@ -155,7 +157,7 @@ const Header = () => {
                                     </Link>
                                 )}
                                 {!isLoading && (
-                                    currentUser ? (
+                                    userIsPresent && currentUser ? (
                                         <>
                                             <Link
                                                 href="/profile"
