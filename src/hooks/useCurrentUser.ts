@@ -9,7 +9,7 @@ const useCurrentUser = () => {
 
     const currentUser = useAppSelector(selectCurrentUser);
     const token = getCookie('token');
-    const { data, isLoading, refetch } = useGetUserQuery({ id: currentUser?.userId as string, token: token as string });
+    const { data, isLoading, refetch } = useGetUserQuery({ id: currentUser?.userId as string, token: token as string }, { skip: !token });
     
     return { data, isLoading, refetch }
 };

@@ -49,11 +49,11 @@ const NewsFeed: React.FC = () => {
     useEffect(() => {
         if (data?.data?.posts) {
             if (page === 1) {
-                setAllPosts(data.data.posts);
+                setAllPosts(data?.data?.posts);
             } else {
-                updatePosts(data.data.posts);
+                updatePosts(data?.data?.posts);
             }
-            setHasMore(data.data.totalPages > page);
+            setHasMore(data?.data?.totalPages > page);
         }
     }, [data, page, updatePosts]);
 
